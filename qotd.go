@@ -38,7 +38,8 @@ func main() {
 		cli.BoolFlag{Name: "strict", Usage: "quotes served in RFC 865 strict mode"},
 		cli.BoolFlag{Name: "no-tcp", Usage: "server does not listen on tcp"},
 		cli.BoolFlag{Name: "no-udp", Usage: "server does not listen on udp"},
-		cli.BoolFlag{Name: "no-mdns", Usage: "server does not advertise over mdns"},
+		cli.BoolFlag{Name: "no-http", Usage: "server does not listen on http"},
+		cli.BoolFlag{Name: "mdns", Usage: "advertise over mdns"},
 	}
 
 	app.Action = func(c *cli.Context) {
@@ -52,7 +53,8 @@ func main() {
 		strictMode := c.Bool("strict")
 		startUdp := !c.Bool("no-udp")
 		startTcp := !c.Bool("no-tcp")
-		advertiseService := !c.Bool("no-mdns")
+		startHttp := !c.Bool("no-http")
+		advertiseService := c.Bool("mdns")
 
 		if strictMode {
 			port = "17"
@@ -71,6 +73,10 @@ func main() {
 
 		if startTcp {
 			go listenForTcp(port, quotes, strictMode)
+		}
+
+		if startHttp {
+			go listenForHttp(port, quotes, strictMode)
 		}
 
 		if startTcp || startUdp {
@@ -119,6 +125,19 @@ func listenForTcp(port string, quotes []string, strictMode bool) {
 		}
 		go serveRandomQuote(conn, quotes, strictMode)
 	}
+}
+
+func httpQuote(w http.ResponseWriter, req *http.Request) {
+
+	quotes := loadQuotes("wisdom.txt")
+	quote, _ := randomQuoteFormattedForDelivery(quotes, false)
+	fmt.Fprintf(w, quote)
+}
+
+func listenForHttp(port string, quotes []string, strictMode bool) {
+	log.Info("HTTP: QOTD Server Started on Port 80")
+	http.HandleFunc("/", httpQuote)
+	http.ListenAndServe(":80", nil)
 }
 
 func listenForUdp(port string, quotes []string, strictMode bool) {
