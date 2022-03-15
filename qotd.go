@@ -12,10 +12,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Sirupsen/logrus"
-	"github.com/armon/mdns"
-	"github.com/codegangsta/cli"
-	"github.com/nu7hatch/gouuid"
+	"github.com/gofrs/uuid"
+	"github.com/hashicorp/mdns"
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 const (
@@ -34,11 +34,11 @@ func main() {
 	app.Name = "QOTD"
 	app.Usage = "Run a QOTD Server"
 	app.Flags = []cli.Flag{
-		cli.StringFlag{"port,p", "3333", "port to bind the server to"},
-		cli.BoolFlag{"strict", "quotes served in RFC 865 strict mode"},
-		cli.BoolFlag{"no-tcp", "server does not listen on tcp"},
-		cli.BoolFlag{"no-udp", "server does not listen on udp"},
-		cli.BoolFlag{"no-mdns", "server does not advertise over mdns"},
+		cli.StringFlag{Name: "port,p", Value: "3333", Usage: "port to bind the server to"},
+		cli.BoolFlag{Name: "strict", Usage: "quotes served in RFC 865 strict mode"},
+		cli.BoolFlag{Name: "no-tcp", Usage: "server does not listen on tcp"},
+		cli.BoolFlag{Name: "no-udp", Usage: "server does not listen on udp"},
+		cli.BoolFlag{Name: "no-mdns", Usage: "server does not advertise over mdns"},
 	}
 
 	app.Action = func(c *cli.Context) {
@@ -92,11 +92,11 @@ func advertiseQOTDService(advertiseTcp bool, advertiseUdp bool, port string) *md
 	service := &mdns.MDNSService{
 		Instance: host,
 		Service:  "_qotd._tcp",
-		Addr:     []byte{0, 0, 0, 0},
+		IPs:      []net.IP{net.IP([]byte{0, 0, 0, 0})},
 		Port:     3333,
-		Info:     "QOTD Service",
+		TXT:      []string{"Local web server"},
 	}
-	service.Init()
+	// service.Init()
 
 	server, _ := mdns.NewServer(&mdns.Config{Zone: service})
 	return server
