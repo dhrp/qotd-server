@@ -1,5 +1,11 @@
-image:
-    docker buildx build -t dhrp/qotd --platform=linux/amd64 .
+tag = $(shell git describe --tags --abbrev=0)
+
+tag:
+	@echo $(tag)
+
+dockerize:
+	docker buildx build -t dhrp/qotd:latest -t dhrp/qotd:$(tag) --platform=linux/amd64 .
     
 push:
-    docker push dhrp/qotd
+	docker push --all-tags dhrp/qotd:latest
+
