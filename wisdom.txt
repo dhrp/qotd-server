@@ -1577,3 +1577,6 @@ Your wig steers the gig.
 When you change a lot of things. Write down the things you may forget to include.
 		-- Thatcher
 %
+Git describe --tags is your friend.
+		-- Thatcher
+%
