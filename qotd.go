@@ -128,6 +128,11 @@ func listenForTcp(port string, quotes []string, strictMode bool) {
 }
 
 func httpQuote(w http.ResponseWriter, req *http.Request) {
+	// log the request
+	log.WithFields(logrus.Fields{
+		"request": req.URL,
+		"client":  req.RemoteAddr,
+	}).Info("QOTD Request Received")
 
 	quotes := loadQuotes("wisdom.txt")
 	quote, _ := randomQuoteFormattedForDelivery(quotes, false)
@@ -136,6 +141,11 @@ func httpQuote(w http.ResponseWriter, req *http.Request) {
 
 // function to return promeheteus metrics
 func metrics(w http.ResponseWriter, req *http.Request) {
+	// log the request
+	log.WithFields(logrus.Fields{
+		"request": req.URL,
+		"client":  req.RemoteAddr,
+	}).Info("Metrics Request Received")
 
 	quotes := loadQuotes("wisdom.txt")
 	// count number of quotes
