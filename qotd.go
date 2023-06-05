@@ -161,8 +161,8 @@ func metrics(w http.ResponseWriter, req *http.Request) {
 
 func listenForHttp(port string, quotes []string, strictMode bool) {
 	log.Info("HTTP: QOTD Server Started on Port 80")
-	http.HandleFunc("/", httpQuote)
 	http.HandleFunc("/metrics", metrics)
+	http.HandleFunc("/", httpQuote)
 	http.ListenAndServe(":80", nil)
 }
 
