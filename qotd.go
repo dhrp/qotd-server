@@ -134,9 +134,25 @@ func httpQuote(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, quote)
 }
 
+// function to return promeheteus metrics
+func metrics(w http.ResponseWriter, req *http.Request) {
+
+	quotes := loadQuotes("wisdom.txt")
+	// count number of quotes
+	fmt.Fprintf(w, "# HELP qotd_quotes_total The total number of quotes\n")
+	fmt.Fprintf(w, "# TYPE qotd_quotes_total counter\n")
+	fmt.Fprintf(w, "qotd_quotes_total %d\n", len(quotes))
+
+	// return if the server is up
+	fmt.Fprintf(w, "# HELP qotd_server_up The server is up\n")
+	fmt.Fprintf(w, "# TYPE qotd_server_up gauge\n")
+	fmt.Fprintf(w, "qotd_server_up 1\n")
+}
+
 func listenForHttp(port string, quotes []string, strictMode bool) {
 	log.Info("HTTP: QOTD Server Started on Port 80")
 	http.HandleFunc("/", httpQuote)
+	http.HandleFunc("/metrics", metrics)
 	http.ListenAndServe(":80", nil)
 }
 
