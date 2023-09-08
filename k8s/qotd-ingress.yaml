@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: qotd
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: qotd.my.host
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: qotd
+            port:
+              name: http
+  # tls:
+  #   - hosts:
+  #       - qotd.my.host
+  #     secretName: qotd-tls
